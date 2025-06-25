@@ -100,14 +100,14 @@
     "viewsContainers": {
       "activitybar": [
         {
-          "id": "swagger-doc-to-code",
+          "id": "SwaggerDocToCode",
           "title": "%app.title%",
-          "icon": "assets/icons/tree.view.svg"
+          "icon": "assets/icons/tree-app-icon.svg"
         }
       ]
     },
     "views": {
-      "swagger-doc-to-code": [
+      "SwaggerDocToCode": [
         {
           "id": "view.list",
           "name": "%view.list.title%"

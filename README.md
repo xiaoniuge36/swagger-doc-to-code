@@ -101,7 +101,7 @@
 
 ### 基础模板配置
 
-创建 `.vscode/api-doc-templates.js` 文件来自定义生成的代码格式：
+创建 `.vscode/swagger-doc-to-code.template.js` 文件来自定义生成的代码格式：
 
 ```js
 /**
@@ -145,7 +145,92 @@ module.exports = {
 
 ### 高级模板示例
 
-#### 1. 添加 JSDoc 注释
+#### 1. 添加分组前缀
+
+编辑 `.vscode/swagger-doc-to-code.template.js` 文件：
+
+```js
+function namespace(params) {
+  return `${params.groupName.replace(/[\-\n\s\/\\]/g, '_')}_${params.pathName}`
+}
+
+module.exports = { namespace }
+```
+
+#### 2. 将字段名转化为大驼峰
+
+编辑 `.vscode/swagger-doc-to-code.template.js` 文件：
+
+```js
+/**
+ * 首字母大写
+ * @param {String} str
+ */
+function toUp(str) {
+  if (typeof str !== 'string') return ''
+  return str.slice(0, 1).toUpperCase() + str.slice(1)
+}
+
+function paramsItem(item, params) {
+  // 项目标题(swaggerToTypes.swaggerJsonUrl[number].title) 为 demo-1 时忽略定制方案
+  if (params.groupName === 'demo-1') return
+
+  return `${toUp(item.name)}${item.required ? ':' : '?:'} ${item.type}`
+}
+
+module.exports = { paramsItem }
+```
+
+#### 3. 复制请求函数
+
+配置一个请求函数模板用于快速复制。编辑 `.vscode/swagger-doc-to-code.template.js` 文件：
+
+如果导出了 `copyRequest` 函数，即可使用此功能。相关按钮将出现在这几个位置：
+- 本地接口列表操作按钮
+- `.d.ts` 文件标题栏操作按钮
+- `.d.ts` 文件代码行首文字按钮
+
+下面是一个例子：
+
+```js
+/**
+ * 请求函数模板
+ *
+ * @param {{
+ *  fileName: string
+ *  ext: string
+ *  filePath: string
+ *  name?: string
+ *  namespace?: string
+ *  path?: string
+ *  method?: string
+ *  update?: string
+ *  ignore?: boolean
+ *  savePath?: string
+ * }} fileInfo
+ * @returns
+ */
+function copyRequest(fileInfo) {
+  return [
+    `/** ${fileInfo.name} */`,
+    `export async function unnamed(params?: ${fileInfo.namespace}.Params, options?: RequestOptions) {`,
+    `  return $api`,
+    `    .request<${fileInfo.namespace}.Response>('${fileInfo.path}', params, {`,
+    `      method: ${fileInfo.method},`,
+    `      ...options,`,
+    `    })`,
+    `    .then((res) => res.content || {})`
+    `}`,
+  ]
+}
+
+module.exports = {
+  // ...
+  copyRequest,
+}
+```
+
+#### 4. 添加 JSDoc 注释
 
 ```js
 function namespace(context) {
@@ -161,7 +246,7 @@ function namespace(context) {
 }
 ```
 
-#### 2. 生成请求函数
+#### 5. 生成请求函数
 
 ```js
 function requestFunction(context) {
@@ -186,7 +271,7 @@ function requestFunction(context) {
 }
 ```
 
-#### 3. 类型转换优化
+#### 6. 类型转换优化
 
 ```js
 function typeMapping(swaggerType, format) {
@@ -303,6 +388,13 @@ export function useUserProfile(userId: string) {
   )
 }
 ```
+
+## 📝 注意事项
+
+- 支持 Swagger v2 API
+- 支持 OpenAPI 3.0.0
+- 请不要对模板处理函数的参数直接进行赋值操作，这可能产生破坏性影响
+- 模板文件名为 `swagger-doc-to-code.template.js`
 
 ## 🛠️ 开发指南
 
