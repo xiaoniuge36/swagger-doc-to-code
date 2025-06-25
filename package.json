@@ -1,7 +1,7 @@
 {
   "name": "SwaggerDocToCode",
   "displayName": "SwaggerDocToCode",
-  "description": "A powerful VS Code extension that converts multiple API documentation formats (Swagger, OpenAPI, Postman Collection) into TypeScript type definitions and request code.",
+  "description": "一个强大的 VS Code 扩展，支持将多种 API 文档格式（Swagger、OpenAPI、Postman Collection等）转换为 TypeScript 类型定义和请求代码。",
   "version": "1.0.2",
   "icon": "assets/icon.png",
   "publisher": "niuge666",
