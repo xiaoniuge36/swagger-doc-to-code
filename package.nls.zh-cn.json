@@ -1,0 +1,55 @@
+{
+  "app.title": "Swagger API",
+  "app.category": "Swagger API",
+
+  "view.list.title": "Swagger 接口列表",
+  "view.local.title": "本地接口列表",
+
+  "viewsWelcome.emptyList": "[添加 Swagger API](command:cmd.list.add)\n[打开工作区设置](command:cmd.common.setting)\n",
+  "viewsWelcome.emptyLocal": "本地接口列表为空",
+
+  "command.list.refresh": "刷新远程接口列表",
+  "command.local.refresh": "刷新本地接口列表",
+  "command.add": "添加 API",
+  "command.setting": "打开工作区设置",
+  "command.search": "搜索",
+  "command.remove": "删除",
+  "command.openLink": "在浏览器中打开",
+  "command.saveInterface": "保存接口",
+  "command.local.updateInterface": "更新接口",
+  "command.local.copyRequest": "复制请求代码",
+  "command.template.edit": "编辑生成模板",
+
+  "text.search.placeholder": "请输入关键字",
+  "text.title": "标题",
+  "text.swaggerJsonUrl": "Swagger Json Url",
+  "text.noWorkspace": "需要工作区",
+  "text.or": "或",
+  "text.config.swaggerJsonUrl": "Swagger API 列表",
+  "text.config.savePath": "Typescript 接口文件保存路径",
+  "text.config.showStatusbarItem": "显示状态栏按钮",
+  "text.config.compareChanges": "是否在更新接口时比对更改 (无更改不更新)",
+  "text.config.reloadWhenSettingsChanged": "当用户设置更改时重新加载数据. (在某些频繁刷新设置的情况下需要关闭)",
+  "text.confirmDeleteFile": "确认删除文件?",
+  "text.confirm": "确认",
+  "text.cancel": "取消",
+  "text.group": "分组",
+  "text.querySwaggerData": "获取 Swagger API 数据...",
+  "text.updateButton": "更新接口",
+  "text.confirmUpdateAll": "确认更新吗? 这将导致本地接口被覆盖",
+  "text.noChange": "接口无变更",
+  "text.preview": "正在预览",
+  "text.clickToSave": "点击保存",
+  "text.canBeEmpty": "可以为空",
+  "text.exist": "${1}已存在",
+
+  "success": "成功",
+  "failed": "失败",
+
+  "error.path": "错误的路径",
+  "error.action": "操作失败, 详情请查看日志",
+  "error.other": "未知错误",
+
+  "temp.input.placeholder": "请输入 ${1}",
+  "temp.input.none": "输入的 ${1} 不能为空"
+}
