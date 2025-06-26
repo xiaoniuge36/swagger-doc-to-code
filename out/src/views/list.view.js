@@ -271,6 +271,13 @@ class ViewList extends core_1.BaseTreeProvider {
         this.globalSavePath = path_1.default.resolve(tools_1.WORKSPACE_PATH || '', savePath);
         this.refresh();
     }
+    updateSavePath(savePath) {
+        this.globalSavePath = path_1.default.resolve(tools_1.WORKSPACE_PATH || '', savePath);
+        this.refresh();
+    }
+    destroy() {
+        // 清理资源
+    }
 }
 exports.ViewList = ViewList;
 class ListItem extends core_1.BaseTreeItem {

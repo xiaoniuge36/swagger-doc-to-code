@@ -2,7 +2,7 @@
   "name": "swagger-doc-to-code",
   "displayName": "Swagger Doc To Code",
   "description": "一个强大的 VS Code 扩展，支持将多种 API 文档格式（Swagger、OpenAPI、Postman Collection等）转换为 TypeScript 类型定义和请求代码。",
-  "version": "1.0.5",
+  "version": "1.1.0",
   "icon": "assets/icon.png",
   "publisher": "niuge666",
   "engines": {
@@ -22,6 +22,16 @@
     "*"
   ],
   "contributes": {
+    "snippets": [
+      {
+        "language": "typescript",
+        "path": "./snippets/api-snippets.json"
+      },
+      {
+        "language": "javascript",
+        "path": "./snippets/api-snippets.json"
+      }
+    ],
     "keybindings": [
       {
         "command": "cmd.list.search",
@@ -80,11 +90,51 @@
         "icon": "$(trash)"
       },
       {
-        "command": "cmd.common.setting",
-        "title": "%command.setting%",
-        "category": "%app.category%",
-        "icon": "$(gear)"
-      },
+          "command": "cmd.common.setting",
+          "title": "%command.setting%",
+          "category": "%app.category%",
+          "icon": "$(gear)"
+        },
+        {
+          "command": "cmd.config.quickSetup",
+          "title": "快速配置",
+          "icon": "$(settings-gear)"
+        },
+        {
+          "command": "cmd.config.exportConfig",
+          "title": "导出配置",
+          "icon": "$(export)"
+        },
+        {
+          "command": "cmd.config.importConfig",
+          "title": "导入配置",
+          "icon": "$(import)"
+        },
+        {
+          "command": "cmd.config.resetConfig",
+          "title": "重置配置",
+          "icon": "$(refresh)"
+        },
+        {
+          "command": "cmd.api.generateTest",
+          "title": "生成 API 测试代码",
+          "icon": "$(beaker)"
+        },
+        {
+          "command": "cmd.api.generateCurl",
+          "title": "生成 cURL 命令",
+          "icon": "$(terminal)"
+        },
+        {
+          "command": "cmd.welcome.show",
+          "title": "显示欢迎页面",
+          "icon": "$(home)"
+        },
+        {
+          "command": "cmd.stats.refresh",
+          "title": "刷新 API 统计",
+          "icon": "$(refresh)"
+        },
       {
         "command": "cmd.common.openLink",
         "title": "%command.openLink%",
@@ -250,6 +300,41 @@
           "type": "boolean",
           "description": "%text.config.reloadWhenSettingsChanged%",
           "default": true
+        },
+        "SwaggerDocToCode.enableWelcomeMessage": {
+          "type": "boolean",
+          "description": "启用欢迎消息和版本升级通知",
+          "default": true
+        },
+        "SwaggerDocToCode.enableCodeSnippets": {
+          "type": "boolean",
+          "description": "启用 API 代码片段功能",
+          "default": true
+        },
+        "SwaggerDocToCode.enableSmartCompletion": {
+          "type": "boolean",
+          "description": "启用智能代码补全功能",
+          "default": true
+        },
+        "SwaggerDocToCode.enableCodeLens": {
+          "type": "boolean",
+          "description": "启用代码镜头功能（在类型定义上显示快速操作）",
+          "default": true
+        },
+        "SwaggerDocToCode.enableApiTesting": {
+          "type": "boolean",
+          "description": "启用 API 测试功能（生成测试代码和 cURL 命令）",
+          "default": true
+        },
+        "SwaggerDocToCode.apiStatsInStatusBar": {
+          "type": "boolean",
+          "description": "在状态栏显示 API 统计信息",
+          "default": true
+        },
+        "SwaggerDocToCode.autoUpdateApiStats": {
+          "type": "boolean",
+          "description": "自动更新 API 统计信息",
+          "default": true
         }
       }
     }
@@ -261,7 +346,7 @@
     "pretest": "npm run compile",
     "test": "node ./out/test/runTest.js",
     "package": "vsce package",
-    "package:auto": "npm run compile && vsce package --out ./dist/",
+    "package:auto": "cd .. && npm run compile && vsce package --out ./dist/",
     "publish": "vsce publish",
     "publish:auto": "npm run compile && vsce publish"
   },

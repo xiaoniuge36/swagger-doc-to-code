@@ -341,6 +341,15 @@ export class ViewList extends BaseTreeProvider<ListItem> {
     this.globalSavePath = path.resolve(WORKSPACE_PATH || '', savePath)
     this.refresh()
   }
+
+  updateSavePath(savePath: string): void {
+    this.globalSavePath = path.resolve(WORKSPACE_PATH || '', savePath)
+    this.refresh()
+  }
+
+  destroy(): void {
+    // 清理资源
+  }
 }
 
 export class ListItem extends BaseTreeItem<ExtListItemConfig> {}

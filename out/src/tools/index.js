@@ -25,4 +25,7 @@ __exportStar(require("./utils"), exports);
 __exportStar(require("./vsc"), exports);
 __exportStar(require("./editor"), exports);
 __exportStar(require("./get-templates"), exports);
+__exportStar(require("./welcome"), exports);
+__exportStar(require("./feature-manager"), exports);
+__exportStar(require("./config-manager"), exports);
 //# sourceMappingURL=index.js.map
