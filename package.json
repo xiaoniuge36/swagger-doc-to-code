@@ -1,6 +1,6 @@
 {
-  "name": "SwaggerDocToCode",
-  "displayName": "SwaggerDocToCode",
+  "name": "swagger-doc-to-code",
+  "displayName": "Swagger Doc To Code",
   "description": "一个强大的 VS Code 扩展，支持将多种 API 文档格式（Swagger、OpenAPI、Postman Collection等）转换为 TypeScript 类型定义和请求代码。",
   "version": "1.0.2",
   "icon": "assets/icon.png",
@@ -102,7 +102,7 @@
         {
           "id": "SwaggerDocToCode",
           "title": "%app.title%",
-          "icon": "assets/icons/tree-app-icon.svg"
+          "icon": "assets/icons/mif-icon.svg.svg"
         }
       ]
     },
@@ -289,7 +289,7 @@
     "url": "https://github.com/xiaoniuge36/swagger-doc-to-code"
   },
   "bugs": {
-    "url": "https://github.com/xiaoniuge36/swagger-doc-to-code",
+    "url": "https://github.com/xiaoniuge36/swagger-doc-to-code/issues",
     "email": "694838286@qq.com"
   }
 }

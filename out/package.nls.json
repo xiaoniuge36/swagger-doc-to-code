@@ -1,6 +1,6 @@
 {
-    "app.title": "Swagger API",
-    "app.category": "Swagger API",
+    "app.title": "Swagger To Code",
+    "app.category": "Swagger To Code",
     "view.list.title": "Swagger API List",
     "view.local.title": "Local API List",
     "viewsWelcome.emptyList": "[Add Swagger API](command:cmd.list.add)\n[Open Workspace Settings](command:cmd.common.setting)\n",

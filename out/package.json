@@ -102,7 +102,7 @@
                 {
                     "id": "SwaggerDocToCode",
                     "title": "%app.title%",
-                    "icon": "assets/icons/tree-app-icon.svg"
+                    "icon": "assets/icons/mif-icon.svg"
                 }
             ]
         },
