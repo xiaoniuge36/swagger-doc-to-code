@@ -1,6 +1,22 @@
 import { OpenAPIV2 } from 'openapi-types'
 
 import { toCamel, randomId, SwaggerJsonUrlItem, log, getValueByPath, config } from '../tools'
+import { TreeInterface } from '../views/local.view'
+import { TreeInterfacePropertiesItem } from '../tools/get-templates'
+
+// 类型定义
+export interface SwaggerJsonTreeItem {
+  key: string
+  parentKey: string
+  title: string
+  subTitle: string
+  savePath: string
+  type: 'root' | 'group' | 'interface' | 'file-ignore' | 'file-sync' | 'config-group'
+  pathName?: string
+  method?: string
+  children?: SwaggerJsonTreeItem[]
+  [key: string]: any
+}
 
 export function parseSwaggerJson(
   swaggerJson: OpenAPIV2.Document,

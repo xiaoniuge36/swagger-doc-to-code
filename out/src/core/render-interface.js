@@ -153,6 +153,7 @@ function parseHeaderInfo(data) {
         ` * @path     ${data.path}`,
         ` * @method   ${data.method.toUpperCase()}`,
         ` * @savePath ${data.savePath}`,
+        ` * @configTitle ${data.configTitle || ''}`,
         ` * @update   ${new Date().toLocaleString()}`,
         ' */',
         '',

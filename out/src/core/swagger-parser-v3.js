@@ -67,6 +67,7 @@ class OpenAPIV3Parser extends _1.BaseParser {
             key: (0, tools_1.randomId)(`${desc}-xxxxxx`),
             basePath: this.configItem.basePath || '',
             parentKey: '',
+            savePath: this.configItem.savePath || '',
             method,
             params,
             response,

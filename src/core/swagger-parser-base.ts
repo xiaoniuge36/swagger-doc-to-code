@@ -1,5 +1,6 @@
 import { OpenAPIV3 } from 'openapi-types'
 import { randomId, SwaggerJsonUrlItem, toCamel, config, isDef } from '../tools'
+import { SwaggerJsonTreeItem } from './swagger-parser-v2'
 
 export abstract class BaseParser {
   public tagsMap = {}

@@ -1,6 +1,10 @@
 import vscode from 'vscode'
 
 import { WORKSPACE_PATH, SwaggerJsonUrlItem } from '../tools'
+import { SwaggerJsonTreeItem } from './swagger-parser-v2'
+
+// 类型定义
+type AnyObj = { [key: string]: any }
 
 export interface BaseTreeItemOptions {
   /** 标题 */
@@ -28,6 +32,7 @@ const ICON_MAP: { [K in SwaggerJsonTreeItem['type']]: vscode.TreeItem['iconPath'
   interface: new vscode.ThemeIcon('debug-disconnect'),
   'file-ignore': new vscode.ThemeIcon('sync-ignored'),
   'file-sync': new vscode.ThemeIcon('sync'),
+  'config-group': new vscode.ThemeIcon('server-environment'),
 }
 
 export class BaseTreeItem<ExtOptions extends AnyObj = AnyObj> extends vscode.TreeItem {

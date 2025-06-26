@@ -2,7 +2,7 @@
     "name": "swagger-doc-to-code",
     "displayName": "Swagger Doc To Code",
     "description": "一个强大的 VS Code 扩展，支持将多种 API 文档格式（Swagger、OpenAPI、Postman Collection等）转换为 TypeScript 类型定义和请求代码。",
-    "version": "1.1.0",
+    "version": "1.1.1",
     "icon": "assets/icon.png",
     "publisher": "niuge666",
     "engines": {
@@ -83,6 +83,16 @@
                 "command": "cmd.local.copyRequest",
                 "title": "%command.local.copyRequest%",
                 "icon": "$(copy)"
+            },
+            {
+                "command": "cmd.local.copyGroupRequests",
+                "title": "批量复制请求代码",
+                "icon": "$(copy)"
+            },
+            {
+                "command": "cmd.local.createTemplate",
+                "title": "一键添加模板配置",
+                "icon": "$(file-add)"
             },
             {
                 "command": "cmd.common.deleteFile",
@@ -230,6 +240,11 @@
                     "when": "view == view.local"
                 },
                 {
+                    "command": "cmd.local.createTemplate",
+                    "group": "navigation@12",
+                    "when": "view == view.local"
+                },
+                {
                     "command": "cmd.local.refresh",
                     "group": "navigation@19",
                     "when": "view == view.local"
@@ -254,17 +269,27 @@
                 {
                     "command": "cmd.local.copyRequest",
                     "group": "inline@08",
-                    "when": "view == view.local && SwaggerDocToCode.hasCopyRequestFn == 1"
+                    "when": "view == view.local && SwaggerDocToCode.hasCopyRequestFn == 1 && viewItem == interface"
+                },
+                {
+                    "command": "cmd.local.copyGroupRequests",
+                    "group": "inline@07",
+                    "when": "view == view.local && viewItem == group"
                 },
                 {
                     "command": "cmd.local.updateInterface",
                     "group": "inline@09",
-                    "when": "view == view.local"
+                    "when": "view == view.local && viewItem == interface"
+                },
+                {
+                    "command": "cmd.local.copyGroupRequests",
+                    "group": "menu",
+                    "when": "view == view.local && viewItem == group"
                 },
                 {
                     "command": "cmd.local.updateInterface",
                     "group": "menu",
-                    "when": "view == view.local"
+                    "when": "view == view.local && viewItem == interface"
                 },
                 {
                     "command": "cmd.common.deleteFile",
@@ -363,6 +388,7 @@
         "mocha": "^9.1.3",
         "openapi-types": "^9.3.0",
         "prettier": "^2.4.1",
+        "rimraf": "^3.0.2",
         "typescript": "^4.4.4",
         "vscode-test": "^1.6.1"
     },

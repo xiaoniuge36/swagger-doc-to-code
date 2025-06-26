@@ -23,6 +23,8 @@ import {
   localize,
   showLoading,
 } from '../tools'
+import { TreeInterface } from './local.view'
+import { SwaggerJsonTreeItem } from '../core/swagger-parser-v2'
 
 type SwaggerJsonMap = Map<string, SwaggerJsonTreeItem[]>
 interface ExtListItemConfig {
@@ -43,7 +45,7 @@ export class ViewList extends BaseTreeProvider<ListItem> {
   private interFacePathNameMap = new Map<string, SwaggerJsonTreeItem>()
   /** 接口更新时间 */
   public updateDate: string = formatDate(new Date(), 'H:I:S')
-  public globalSavePath = path.resolve(WORKSPACE_PATH || '', config.extConfig.savePath)
+  public globalSavePath = WORKSPACE_PATH ? path.resolve(WORKSPACE_PATH, config.extConfig.savePath) : config.extConfig.savePath
 
   constructor() {
     super()
@@ -52,8 +54,19 @@ export class ViewList extends BaseTreeProvider<ListItem> {
 
   async getChildren(element?: ListItem) {
     if (!element) {
+      // 为每个配置项创建一个顶级分组，避免多余的title层
       const { swaggerJsonUrl = [] } = config.extConfig
-      return swaggerJsonUrl.map((item) => this.renderRootItem(item))
+      return swaggerJsonUrl.map((configItem) => {
+        return new ListItem({
+          key: configItem.url,
+          title: configItem.title || configItem.url,
+          type: 'config-group',
+          subTitle: configItem.url || '',
+          collapsible: 1,
+          contextValue: 'config-group',
+          configItem,
+        })
+      })
     }
 
     const configItem = element.options.configItem
@@ -61,6 +74,7 @@ export class ViewList extends BaseTreeProvider<ListItem> {
     return this.getListData(configItem).then((swaggerJsonMap) => {
       let listData: SwaggerJsonTreeItem[] = []
       switch (element.options.type) {
+        case 'config-group':
         case 'root':
           listData = swaggerJsonMap.get(configItem.url) || []
           return this.renderItem(listData, configItem)
@@ -278,18 +292,95 @@ export class ViewList extends BaseTreeProvider<ListItem> {
     return parentNode
   }
 
+  /** 查找接口项对应的配置URL */
+  private findConfigUrlForItem(item: TreeInterface): string {
+    // 遍历所有配置，查找包含该接口的配置
+    for (const [url, listData] of this.swaggerJsonMap.entries()) {
+      const found = this.findItemInList(listData, item)
+      if (found) {
+        return url
+      }
+    }
+    return ''
+  }
+
+  /** 在列表中递归查找接口项 */
+  private findItemInList(listData: SwaggerJsonTreeItem[], targetItem: TreeInterface): boolean {
+    for (const listItem of listData) {
+      if (listItem.key === targetItem.key || 
+          (listItem.pathName && listItem.pathName === targetItem.pathName)) {
+        return true
+      }
+      if (listItem.children && listItem.children.length > 0) {
+        if (this.findItemInList(listItem.children, targetItem)) {
+          return true
+        }
+      }
+    }
+    return false
+  }
+
+  /** 构建完整的分组路径 */
+  public buildGroupPath(item: TreeInterface, configUrl: string): string[] {
+    const groupPath: string[] = []
+    
+    // 如果有parentKey，递归查找父级分组
+    if (item.parentKey && item.parentKey !== configUrl) {
+      const listData = this.swaggerJsonMap.get(configUrl) || []
+      const parentGroup = listData.find((x) => x.key === item.parentKey)
+      
+      if (parentGroup && parentGroup.type === 'group') {
+        // 递归获取父级路径
+        const parentPath = this.buildGroupPath(parentGroup as TreeInterface, configUrl)
+        groupPath.push(...parentPath)
+        
+        // 添加当前父级分组名
+        const parentGroupName = parentGroup.title || parentGroup.groupName
+        if (parentGroupName && parentGroupName !== 'Default') {
+          const cleanParentName = parentGroupName.replace(/[<>:"/\\|?*]/g, '_').trim()
+          if (cleanParentName) {
+            groupPath.push(cleanParentName)
+          }
+        }
+      }
+    }
+    
+    return groupPath
+  }
+
   /** 保存接口到本地 */
   public async saveInterface(
     itemSource: TreeInterface | ListItem | SwaggerJsonUrlItem,
-    filePath?: string
+    filePath?: string,
+    configUrl?: string
   ): Promise<'no-change' | void> {
     const item = itemSource as TreeInterface
     const { compareChanges } = config.extConfig
     if (!item.pathName) return Promise.reject('SaveInterface Error')
 
-    const savePath = item.savePath ? path.resolve(WORKSPACE_PATH || '', item.savePath) : this.globalSavePath
+    const savePath = item.savePath ? (WORKSPACE_PATH ? path.resolve(WORKSPACE_PATH, item.savePath) : item.savePath) : this.globalSavePath
+    
+    // 构建完整的分组目录结构
+    let finalSavePath = savePath
+    
+    // 获取配置URL，用于查找父级分组
+    const currentConfigUrl = configUrl || this.findConfigUrlForItem(item)
+    
+    // 设置配置标题信息
+    const configItem = config.extConfig.swaggerJsonUrl.find(x => x.url === currentConfigUrl)
+    if (configItem) {
+      item.configTitle = configItem.title
+    }
+    
+    // 构建完整的分组路径
+    const groupPathSegments = this.buildGroupPath(item, currentConfigUrl)
+    
+    // 构建最终路径
+    if (groupPathSegments.length > 0) {
+      finalSavePath = path.join(savePath, ...groupPathSegments)
+    }
 
-    const filePathH = filePath ?? path.join(savePath, `${item.pathName}.d.ts`)
+    const filePathH = filePath ?? path.join(finalSavePath, `${item.pathName}.d.ts`)
     const nextStr = renderToInterface(item)
 
     if (compareChanges && fs.existsSync(filePathH)) {
@@ -308,11 +399,21 @@ export class ViewList extends BaseTreeProvider<ListItem> {
   public async saveInterfaceGroup(item: ListItem) {
     return new Promise(async (resolve, reject) => {
       // await this._refresh()
-      const listData = this.swaggerJsonMap.get(item.options.configItem.url) || []
-      const itemChildren: ListItem[] | undefined = listData.find((x) => x.key === item.options.key)?.children
+      const configUrl = item.options.configItem.url
+      const listData = this.swaggerJsonMap.get(configUrl) || []
+      const groupItem = listData.find((x) => x.key === item.options.key)
+      const itemChildren: SwaggerJsonTreeItem[] | undefined = groupItem?.children
+      
       if (itemChildren && itemChildren.length) {
+        // 为每个子接口设置正确的分组信息
         for (let index = 0; index < itemChildren.length; index++) {
-          await this.saveInterface(itemChildren[index])
+          const childItem = itemChildren[index]
+          // 确保子接口继承父分组的信息
+          if (groupItem && !childItem.groupName) {
+            childItem.groupName = groupItem.title || groupItem.groupName
+          }
+          // 传递configUrl以便正确构建路径
+          await this.saveInterface(childItem, undefined, configUrl)
         }
         resolve(void 0)
       } else {
@@ -338,12 +439,12 @@ export class ViewList extends BaseTreeProvider<ListItem> {
   /** settings.json 文件变更时触发 */
   public onConfigurationRefresh() {
     const { savePath } = config.extConfig
-    this.globalSavePath = path.resolve(WORKSPACE_PATH || '', savePath)
+    this.globalSavePath = WORKSPACE_PATH ? path.resolve(WORKSPACE_PATH, savePath) : savePath
     this.refresh()
   }
 
   updateSavePath(savePath: string): void {
-    this.globalSavePath = path.resolve(WORKSPACE_PATH || '', savePath)
+    this.globalSavePath = WORKSPACE_PATH ? path.resolve(WORKSPACE_PATH, savePath) : savePath
     this.refresh()
   }
 

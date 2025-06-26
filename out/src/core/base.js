@@ -16,6 +16,7 @@ const ICON_MAP = {
     interface: new vscode_1.default.ThemeIcon('debug-disconnect'),
     'file-ignore': new vscode_1.default.ThemeIcon('sync-ignored'),
     'file-sync': new vscode_1.default.ThemeIcon('sync'),
+    'config-group': new vscode_1.default.ThemeIcon('server-environment'),
 };
 class BaseTreeItem extends vscode_1.default.TreeItem {
     constructor(options) {

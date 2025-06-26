@@ -43,7 +43,9 @@ export interface CodeConfig {
 
 export interface ExtConfig extends CodeConfig, LocalConfig {}
 
-export interface LocalConfig {}
+export interface LocalConfig {
+  localSavePath?: string
+}
 
 class Config {
   constructor() {

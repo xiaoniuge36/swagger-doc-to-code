@@ -3,6 +3,12 @@ import fs from 'fs'
 import vscode from 'vscode'
 
 import { WORKSPACE_PATH, TEMPLATE_FILE_NAME, CONFIG_GROUP, config, requireModule, localize } from '../tools'
+import { TreeInterface, FileHeaderInfo } from '../views/local.view'
+
+// 类型定义
+export interface TreeInterfacePropertiesItem {
+  [key: string]: any
+}
 
 export interface TemplateParserParams {
   defaultName: string

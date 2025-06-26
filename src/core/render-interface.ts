@@ -1,4 +1,6 @@
 import { BASE_INDENTATION, BASE_INDENTATION_COUNT, templateConfig } from '../tools'
+import { TreeInterfacePropertiesItem } from '../tools/get-templates'
+import { TreeInterface } from '../views/local.view'
 
 /**
  * 渲染 Typescript Interface
@@ -179,6 +181,7 @@ function parseHeaderInfo(data: TreeInterface): string[] {
     ` * @path     ${data.path}`,
     ` * @method   ${data.method.toUpperCase()}`,
     ` * @savePath ${data.savePath}`,
+    ` * @configTitle ${data.configTitle || ''}`,
     ` * @update   ${new Date().toLocaleString()}`,
     ' */',
     '',

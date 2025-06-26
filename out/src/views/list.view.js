@@ -16,18 +16,30 @@ class ViewList extends core_1.BaseTreeProvider {
         this.interFacePathNameMap = new Map();
         /** 接口更新时间 */
         this.updateDate = (0, tools_1.formatDate)(new Date(), 'H:I:S');
-        this.globalSavePath = path_1.default.resolve(tools_1.WORKSPACE_PATH || '', tools_1.config.extConfig.savePath);
+        this.globalSavePath = tools_1.WORKSPACE_PATH ? path_1.default.resolve(tools_1.WORKSPACE_PATH, tools_1.config.extConfig.savePath) : tools_1.config.extConfig.savePath;
         this.getSearchList();
     }
     async getChildren(element) {
         if (!element) {
+            // 为每个配置项创建一个顶级分组，避免多余的title层
             const { swaggerJsonUrl = [] } = tools_1.config.extConfig;
-            return swaggerJsonUrl.map((item) => this.renderRootItem(item));
+            return swaggerJsonUrl.map((configItem) => {
+                return new ListItem({
+                    key: configItem.url,
+                    title: configItem.title || configItem.url,
+                    type: 'config-group',
+                    subTitle: configItem.url || '',
+                    collapsible: 1,
+                    contextValue: 'config-group',
+                    configItem,
+                });
+            });
         }
         const configItem = element.options.configItem;
         return this.getListData(configItem).then((swaggerJsonMap) => {
             let listData = [];
             switch (element.options.type) {
+                case 'config-group':
                 case 'root':
                     listData = swaggerJsonMap.get(configItem.url) || [];
                     return this.renderItem(listData, configItem);
@@ -218,14 +230,78 @@ class ViewList extends core_1.BaseTreeProvider {
         }
         return parentNode;
     }
+    /** 查找接口项对应的配置URL */
+    findConfigUrlForItem(item) {
+        // 遍历所有配置，查找包含该接口的配置
+        for (const [url, listData] of this.swaggerJsonMap.entries()) {
+            const found = this.findItemInList(listData, item);
+            if (found) {
+                return url;
+            }
+        }
+        return '';
+    }
+    /** 在列表中递归查找接口项 */
+    findItemInList(listData, targetItem) {
+        for (const listItem of listData) {
+            if (listItem.key === targetItem.key ||
+                (listItem.pathName && listItem.pathName === targetItem.pathName)) {
+                return true;
+            }
+            if (listItem.children && listItem.children.length > 0) {
+                if (this.findItemInList(listItem.children, targetItem)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    /** 构建完整的分组路径 */
+    buildGroupPath(item, configUrl) {
+        const groupPath = [];
+        // 如果有parentKey，递归查找父级分组
+        if (item.parentKey && item.parentKey !== configUrl) {
+            const listData = this.swaggerJsonMap.get(configUrl) || [];
+            const parentGroup = listData.find((x) => x.key === item.parentKey);
+            if (parentGroup && parentGroup.type === 'group') {
+                // 递归获取父级路径
+                const parentPath = this.buildGroupPath(parentGroup, configUrl);
+                groupPath.push(...parentPath);
+                // 添加当前父级分组名
+                const parentGroupName = parentGroup.title || parentGroup.groupName;
+                if (parentGroupName && parentGroupName !== 'Default') {
+                    const cleanParentName = parentGroupName.replace(/[<>:"/\\|?*]/g, '_').trim();
+                    if (cleanParentName) {
+                        groupPath.push(cleanParentName);
+                    }
+                }
+            }
+        }
+        return groupPath;
+    }
     /** 保存接口到本地 */
-    async saveInterface(itemSource, filePath) {
+    async saveInterface(itemSource, filePath, configUrl) {
         const item = itemSource;
         const { compareChanges } = tools_1.config.extConfig;
         if (!item.pathName)
             return Promise.reject('SaveInterface Error');
-        const savePath = item.savePath ? path_1.default.resolve(tools_1.WORKSPACE_PATH || '', item.savePath) : this.globalSavePath;
-        const filePathH = filePath ?? path_1.default.join(savePath, `${item.pathName}.d.ts`);
+        const savePath = item.savePath ? (tools_1.WORKSPACE_PATH ? path_1.default.resolve(tools_1.WORKSPACE_PATH, item.savePath) : item.savePath) : this.globalSavePath;
+        // 构建完整的分组目录结构
+        let finalSavePath = savePath;
+        // 获取配置URL，用于查找父级分组
+        const currentConfigUrl = configUrl || this.findConfigUrlForItem(item);
+        // 设置配置标题信息
+        const configItem = tools_1.config.extConfig.swaggerJsonUrl.find(x => x.url === currentConfigUrl);
+        if (configItem) {
+            item.configTitle = configItem.title;
+        }
+        // 构建完整的分组路径
+        const groupPathSegments = this.buildGroupPath(item, currentConfigUrl);
+        // 构建最终路径
+        if (groupPathSegments.length > 0) {
+            finalSavePath = path_1.default.join(savePath, ...groupPathSegments);
+        }
+        const filePathH = filePath ?? path_1.default.join(finalSavePath, `${item.pathName}.d.ts`);
         const nextStr = (0, core_1.renderToInterface)(item);
         if (compareChanges && fs_1.default.existsSync(filePathH)) {
             const currentStr = fs_1.default.readFileSync(filePathH, 'utf-8');
@@ -240,11 +316,20 @@ class ViewList extends core_1.BaseTreeProvider {
     async saveInterfaceGroup(item) {
         return new Promise(async (resolve, reject) => {
             // await this._refresh()
-            const listData = this.swaggerJsonMap.get(item.options.configItem.url) || [];
-            const itemChildren = listData.find((x) => x.key === item.options.key)?.children;
+            const configUrl = item.options.configItem.url;
+            const listData = this.swaggerJsonMap.get(configUrl) || [];
+            const groupItem = listData.find((x) => x.key === item.options.key);
+            const itemChildren = groupItem?.children;
             if (itemChildren && itemChildren.length) {
+                // 为每个子接口设置正确的分组信息
                 for (let index = 0; index < itemChildren.length; index++) {
-                    await this.saveInterface(itemChildren[index]);
+                    const childItem = itemChildren[index];
+                    // 确保子接口继承父分组的信息
+                    if (groupItem && !childItem.groupName) {
+                        childItem.groupName = groupItem.title || groupItem.groupName;
+                    }
+                    // 传递configUrl以便正确构建路径
+                    await this.saveInterface(childItem, undefined, configUrl);
                 }
                 resolve(void 0);
             }
@@ -268,11 +353,11 @@ class ViewList extends core_1.BaseTreeProvider {
     /** settings.json 文件变更时触发 */
     onConfigurationRefresh() {
         const { savePath } = tools_1.config.extConfig;
-        this.globalSavePath = path_1.default.resolve(tools_1.WORKSPACE_PATH || '', savePath);
+        this.globalSavePath = tools_1.WORKSPACE_PATH ? path_1.default.resolve(tools_1.WORKSPACE_PATH, savePath) : savePath;
         this.refresh();
     }
     updateSavePath(savePath) {
-        this.globalSavePath = path_1.default.resolve(tools_1.WORKSPACE_PATH || '', savePath);
+        this.globalSavePath = tools_1.WORKSPACE_PATH ? path_1.default.resolve(tools_1.WORKSPACE_PATH, savePath) : savePath;
         this.refresh();
     }
     destroy() {

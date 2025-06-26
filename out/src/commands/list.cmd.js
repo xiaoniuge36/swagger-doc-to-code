@@ -9,6 +9,7 @@ const path_1 = __importDefault(require("path"));
 const vscode_1 = __importDefault(require("vscode"));
 const tools_1 = require("../tools");
 const core_1 = require("../core");
+const template_generator_1 = require("../templates/template-generator");
 /** 创建模板文件（如果不存在） */
 async function createTemplateFileIfNotExists() {
     if (!tools_1.WORKSPACE_PATH) {
@@ -28,127 +29,8 @@ async function createTemplateFileIfNotExists() {
             fs_1.default.mkdirSync(vscodeDir, { recursive: true });
             tools_1.log.info('已创建 .vscode 目录');
         }
-        // 读取默认模板内容
-        const defaultTemplateContent = fs_1.default.readFileSync(tools_1.DEFAULT_TEMPLATE_FILE_PATH, 'utf8');
-        // 创建增强的模板内容
-        const enhancedTemplateContent = `/**
- * Swagger Doc To Code 模板配置文件
- * 此文件用于自定义生成的 TypeScript 接口代码格式
- * 更多高级用法请参考: https://github.com/xiaoniuge36/swagger-doc-to-code
- */
-
-/**
- * 自定义命名空间名称
- * @param {Object} params - 接口参数
- * @param {string} params.groupName - 分组名称
- * @param {string} params.pathName - 路径名称
- * @param {string} params.method - 请求方法
- * @returns {string} 命名空间名称
- */
-function namespace(params) {
-  const { groupName, pathName, method } = params
-  return \`\$\{groupName.replace(/[\\-\\n\\s\/\\\\]/g, '_')\}_\$\{pathName\}_\$\{method\}\`
-}
-
-/**
- * 自定义参数接口
- * @param {Object} params - 接口上下文
- * @returns {string} 参数接口代码
- */
-function params(params) {
-  return \`export interface Params {
-\$\{params.properties.map(prop => \`  \$\{prop.name\}\$\{prop.required ? '' : '?'\}: \$\{prop.type\}\`).join('\\n')\}
-\}\`
-}
-
-/**
- * 自定义响应接口
- * @param {Object} params - 接口上下文
- * @returns {string} 响应接口代码
- */
-function response(params) {
-  return \`export interface Response {
-\$\{params.properties.map(prop => \`  \$\{prop.name\}\$\{prop.required ? '' : '?'\}: \$\{prop.type\}\`).join('\\n')\}
-\}\`
-}
-
-/**
- * 复制请求函数模板
- * 优化版本：生成单个请求函数，包含完整注释和类型定义
- * @param {Object} fileInfo - 文件信息
- * @param {string} fileInfo.name - 接口名称
- * @param {string} fileInfo.namespace - 命名空间
- * @param {string} fileInfo.path - 请求路径
- * @param {string} fileInfo.method - 请求方法
- * @returns {string[]} 请求函数代码行数组
- */
-function copyRequest(fileInfo) {
-  // 生成函数名（转换为驼峰命名）
-  const functionName = fileInfo.namespace
-    .replace(/[^a-zA-Z0-9]/g, '_')
-    .toLowerCase()
-    .replace(/_([a-z])/g, (_, letter) => letter.toUpperCase())
-  
-  return [
-    \`/**\`,
-    \` * \$\{fileInfo.name || '接口请求函数'\}\`,
-    \` * @description \$\{fileInfo.summary || fileInfo.name || ''\}\`,
-    \` * @method \$\{fileInfo.method?.toUpperCase()\}\`,
-    \` * @url \$\{fileInfo.path\}\`,
-    \` * @param {\$\{fileInfo.namespace\}.Params} params - 请求参数\`,
-    \` * @param {RequestOptions} options - 请求配置选项\`,
-    \` * @returns {Promise<\$\{fileInfo.namespace\}.Response>} 响应数据\`,
-    \` */\`,
-    \`export async function \$\{functionName\}(params?: \$\{fileInfo.namespace\}.Params, options?: RequestOptions): Promise<\$\{fileInfo.namespace\}.Response> {\`,
-    \`  return request<\$\{fileInfo.namespace\}.Response>({\`,
-    \`    url: '\$\{fileInfo.path\}',\`,
-    \`    method: '\$\{fileInfo.method?.toUpperCase()\}',\`,
-    \`    \$\{fileInfo.method?.toLowerCase() === 'get' ? 'params' : 'data'\}: params,\`,
-    \`    ...options\`,
-    \`  })\`,
-    \`}\`,
-    \`\`,
-    \`// 使用示例：\`,
-    \`// const result = await \$\{functionName\}({ /* 参数 */ })\`,
-    \`// console.log(result)\`,
-  ]
-}
-
-// 导出配置
-module.exports = {
-  
-  // 请求函数模板配置（优化版本）
-  copyRequest,
-  
-  // 其他可选配置示例（已注释，根据需要启用）
-  /*
-  // 命名空间配置
-  namespace,
-  
-  // 参数接口配置
-  params,
-  
-  // 响应接口配置  
-  response,
-  // 自定义文件名生成规则
-  fileName: (params) => {
-    return \`\$\{params.groupName\}-\$\{params.pathName\}\`
-  },
-  
-  // 自定义保存路径
-  savePath: (params) => {
-    return \`./src/api/\$\{params.groupName\}\`
-  },
-  
-  // 自定义文件扩展名
-  ext: '.ts',
-  
-  // 是否忽略某些接口
-  ignore: (params) => {
-    return params.path.includes('/internal/')
-  }
-  */
-\}`;
+        // 使用模板生成器创建增强的模板内容
+        const enhancedTemplateContent = template_generator_1.TemplateGenerator.generateEnhancedTemplate();
         // 写入模板文件
         fs_1.default.writeFileSync(templatePath, enhancedTemplateContent, 'utf8');
         tools_1.log.info('✅ 模板文件已自动生成', true);
@@ -173,7 +55,18 @@ function registerListCommands({ viewList, viewLocal, listTreeView, localTreeView
         /** 选择接口 */
         onSelect: (e) => {
             const savePath = e.savePath || tools_1.config.extConfig.savePath || '';
-            const filePath = path_1.default.join(tools_1.WORKSPACE_PATH || '', savePath, `${e.pathName}.d.ts`);
+            // 根据分组信息创建目录结构
+            let finalSavePath = savePath;
+            // 优先使用 groupName，如果没有则使用 title 作为分组名
+            const groupName = e.groupName || e.title;
+            if (groupName && groupName !== 'Default') {
+                // 清理分组名，移除特殊字符，确保可以作为目录名
+                const cleanGroupName = groupName.replace(/[<>:"/\\|?*]/g, '_').trim();
+                if (cleanGroupName) {
+                    finalSavePath = path_1.default.join(savePath, cleanGroupName);
+                }
+            }
+            const filePath = path_1.default.join(tools_1.WORKSPACE_PATH || '', finalSavePath, `${e.pathName}.d.ts`);
             (0, tools_1.preSaveDocument)((0, core_1.renderToInterface)(e), filePath, true);
         },
         /** 添加 swagger 项目 */
@@ -281,8 +174,17 @@ function registerListCommands({ viewList, viewLocal, listTreeView, localTreeView
                     if (!interfaceItem) {
                         return tools_1.log.error('interfaceItem is undefined.', true);
                     }
+                    // 确保接口项有正确的分组信息
+                    if (!interfaceItem.groupName && item.options.parentKey) {
+                        // 从父级获取分组信息
+                        const listData = viewList.swaggerJsonMap.get(item.options.configItem.url) || [];
+                        const parentGroup = listData.find((x) => x.key === item.options.parentKey);
+                        if (parentGroup) {
+                            interfaceItem.groupName = parentGroup.title || parentGroup.groupName;
+                        }
+                    }
                     viewList
-                        .saveInterface(interfaceItem)
+                        .saveInterface(interfaceItem, undefined, item.options.configItem.url)
                         .then(() => {
                         tools_1.log.info(`${tools_1.localize.getLocalize('command.saveInterface')} <${item.label}> ${tools_1.localize.getLocalize('success')}`, true);
                         viewLocal.refresh();
@@ -291,7 +193,15 @@ function registerListCommands({ viewList, viewLocal, listTreeView, localTreeView
                             if (selection === '查看接口文件') {
                                 // 打开生成的接口文件
                                 const savePath = interfaceItem?.savePath || tools_1.config.extConfig.savePath || '';
-                                const filePath = path_1.default.join(tools_1.WORKSPACE_PATH || '', savePath, `${interfaceItem?.pathName}.d.ts`);
+                                // 使用viewList的buildGroupPath方法计算正确的文件路径
+                                let finalSavePath = savePath;
+                                if (interfaceItem) {
+                                    const groupPathSegments = viewList.buildGroupPath(interfaceItem, item.options.configItem.url);
+                                    if (groupPathSegments.length > 0) {
+                                        finalSavePath = path_1.default.join(savePath, ...groupPathSegments);
+                                    }
+                                }
+                                const filePath = path_1.default.join(tools_1.WORKSPACE_PATH || '', finalSavePath, `${interfaceItem?.pathName}.d.ts`);
                                 if (fs_1.default.existsSync(filePath)) {
                                     vscode_1.default.workspace.openTextDocument(filePath).then((doc) => {
                                         vscode_1.default.window.showTextDocument(doc);
@@ -307,7 +217,11 @@ function registerListCommands({ viewList, viewLocal, listTreeView, localTreeView
                                     });
                                 }
                                 else {
-                                    vscode_1.default.window.showWarningMessage('模板配置文件不存在，请先添加一个接口项目以自动生成模板文件。');
+                                    vscode_1.default.window.showWarningMessage('模板配置文件不存在，是否要立即创建？', '创建模板文件', '取消').then((selection) => {
+                                        if (selection === '创建模板文件') {
+                                            vscode_1.default.commands.executeCommand('cmd.local.createTemplate');
+                                        }
+                                    });
                                 }
                             }
                         });

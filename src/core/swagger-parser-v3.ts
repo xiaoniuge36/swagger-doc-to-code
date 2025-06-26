@@ -1,7 +1,15 @@
-import type { OpenAPIV3 } from 'openapi-types';
+import { OpenAPIV3 } from 'openapi-types'
 
 import { getValueByPath, log, randomId } from '../tools';
-import { BaseParser } from './';
+import { BaseParser } from './'
+import { TreeInterface } from '../views/local.view'
+import { SwaggerJsonTreeItem } from './swagger-parser-v2'
+import { TreeInterfacePropertiesItem } from '../tools/get-templates'
+
+// 类型定义
+export interface TreeInterfaceParamsItem {
+  [key: string]: any
+}
 
 interface DereferenceItem extends Required<OpenAPIV3.OperationObject> {}
 
@@ -112,6 +120,7 @@ export class OpenAPIV3Parser extends BaseParser {
       key: randomId(`${desc}-xxxxxx`),
       basePath: this.configItem.basePath || '',
       parentKey: '',
+      savePath: this.configItem.savePath || '',
       method,
       params,
       response,
@@ -401,11 +410,11 @@ export class OpenAPIV3Parser extends BaseParser {
     }
 
     const cacheObj: Record<string, TreeInterfacePropertiesItem> = {};
-    a.forEach((v) => {
+    a.forEach((v: TreeInterfacePropertiesItem) => {
       cacheObj[v.name] = v;
     });
 
-    b.forEach((v) => {
+    b.forEach((v: TreeInterfacePropertiesItem) => {
       if (cacheObj[v.name]) return; // 重复则忽略后数据
       cacheObj[v.name] = v;
     });
