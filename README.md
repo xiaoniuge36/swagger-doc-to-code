@@ -172,7 +172,7 @@ function toUp(str) {
 }
 
 function paramsItem(item, params) {
-  // 项目标题(swaggerToTypes.swaggerJsonUrl[number].title) 为 demo-1 时忽略定制方案
+  // 项目标题(SwaggerDocToCode.swaggerJsonUrl[number].title) 为 demo-1 时忽略定制方案
   if (params.groupName === 'demo-1') return
 
   return `${toUp(item.name)}${item.required ? ':' : '?:'} ${item.type}`
