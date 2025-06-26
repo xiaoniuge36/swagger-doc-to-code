@@ -29,7 +29,7 @@ exports.LOCAL_CONFIG_PATH = path_1.default.join(exports.EXT_PATH, 'local.config.
 /** vscode 配置项前缀 */
 exports.CONFIG_GROUP = 'SwaggerDocToCode';
 /** 模板配置文件名 */
-exports.TEMPLATE_FILE_NAME = 'swagger-to-types.template.js';
+exports.TEMPLATE_FILE_NAME = 'swagger-doc-to-code.template.js';
 /** 默认模板配置文件路径 */
 exports.DEFAULT_TEMPLATE_FILE_PATH = path_1.default.join(exports.EXT_PATH, 'templates/new.template.js');
 /** 默认缩进单位 */

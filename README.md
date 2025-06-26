@@ -51,6 +51,7 @@
 - 使用快捷键 `Alt + Shift + F` 打开接口列表
 - 选择需要的接口并生成 TypeScript 类型文件
 - 生成的文件将保存到配置的目录中
+- 🎉 **首次添加接口文档时，扩展会自动生成模板文件** `.vscode/swagger-doc-to-code.template.js`，用于自定义代码生成格式
 
 ## ⚙️ 配置选项
 
@@ -99,9 +100,19 @@
 
 ## 🎨 自定义模板
 
+### 自动生成模板文件
+
+🎉 **新功能**: 当您首次添加接口文档时，扩展会自动在工作区的 `.vscode` 目录下生成 `swagger-doc-to-code.template.js` 模板文件，无需手动创建！
+
+模板文件包含以下预设功能：
+- ✅ 自定义命名空间名称
+- ✅ 自定义参数和响应接口格式
+- ✅ 复制请求函数模板
+- ✅ 完整的 JSDoc 注释和使用示例
+
 ### 基础模板配置
 
-创建 `.vscode/swagger-doc-to-code.template.js` 文件来自定义生成的代码格式：
+生成的 `.vscode/swagger-doc-to-code.template.js` 文件用于自定义生成的代码格式：
 
 ```js
 /**
@@ -145,9 +156,11 @@ module.exports = {
 
 ### 高级模板示例
 
+模板文件自动生成后，您可以根据需要进行自定义修改：
+
 #### 1. 添加分组前缀
 
-编辑 `.vscode/swagger-doc-to-code.template.js` 文件：
+修改 `.vscode/swagger-doc-to-code.template.js` 文件：
 
 ```js
 function namespace(params) {
@@ -159,7 +172,7 @@ module.exports = { namespace }
 
 #### 2. 将字段名转化为大驼峰
 
-编辑 `.vscode/swagger-doc-to-code.template.js` 文件：
+修改 `.vscode/swagger-doc-to-code.template.js` 文件：
 
 ```js
 /**
@@ -183,7 +196,7 @@ module.exports = { paramsItem }
 
 #### 3. 复制请求函数
 
-配置一个请求函数模板用于快速复制。编辑 `.vscode/swagger-doc-to-code.template.js` 文件：
+模板文件已预设了复制请求函数功能。您可以根据需要修改 `.vscode/swagger-doc-to-code.template.js` 文件中的 `copyRequest` 函数：
 
 如果导出了 `copyRequest` 函数，即可使用此功能。相关按钮将出现在这几个位置：
 - 本地接口列表操作按钮
