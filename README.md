@@ -418,6 +418,37 @@ npm run dev
 
 4. 在 VS Code 中按 `F5` 启动调试
 
+### 打包和发布
+
+#### 手动打包
+
+```bash
+# 基础打包
+npm run package
+
+# 自动编译并打包到 dist 目录
+npm run package:auto
+```
+
+#### 发布到市场
+
+```bash
+# 手动发布
+npm run publish
+
+# 自动编译并发布
+npm run publish:auto
+```
+
+#### 打包命令说明
+
+- `npm run package`: 使用 vsce 打包扩展为 .vsix 文件
+- `npm run package:auto`: 自动编译 TypeScript 代码并打包到 dist 目录
+- `npm run publish`: 发布扩展到 VS Code 市场
+- `npm run publish:auto`: 自动编译并发布扩展
+
+**注意**: 发布前请确保已配置 vsce 认证令牌，并更新版本号。
+
 ### 贡献代码
 
 我们欢迎社区贡献！请查看 [CONTRIBUTING.md](./CONTRIBUTING.md) 了解详细的贡献指南。
