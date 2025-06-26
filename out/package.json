@@ -2,7 +2,7 @@
     "name": "swagger-doc-to-code",
     "displayName": "Swagger Doc To Code",
     "description": "一个强大的 VS Code 扩展，支持将多种 API 文档格式（Swagger、OpenAPI、Postman Collection等）转换为 TypeScript 类型定义和请求代码。",
-    "version": "1.0.4",
+    "version": "1.0.5",
     "icon": "assets/icon.png",
     "publisher": "niuge666",
     "engines": {
@@ -145,12 +145,12 @@
                 {
                     "command": "cmd.local.copyRequest",
                     "group": "navigation@01",
-                    "when": "editorLangId == typescript && swaggerToTypes.hasCopyRequestFn == 1 && resourcePath in swaggerToTypes.localFiles"
+                    "when": "editorLangId == typescript && SwaggerDocToCode.hasCopyRequestFn == 1 && resourcePath in SwaggerDocToCode.localFiles"
                 },
                 {
                     "command": "cmd.local.updateInterface",
                     "group": "navigation@02",
-                    "when": "editorLangId == typescript && resourcePath in swaggerToTypes.localFiles"
+                    "when": "editorLangId == typescript && resourcePath in SwaggerDocToCode.localFiles"
                 }
             ],
             "view/title": [
@@ -204,7 +204,7 @@
                 {
                     "command": "cmd.local.copyRequest",
                     "group": "inline@08",
-                    "when": "view == view.local && swaggerToTypes.hasCopyRequestFn == 1"
+                    "when": "view == view.local && SwaggerDocToCode.hasCopyRequestFn == 1"
                 },
                 {
                     "command": "cmd.local.updateInterface",
@@ -224,29 +224,29 @@
             ]
         },
         "configuration": {
-            "title": "swaggerToTypes",
+            "title": "SwaggerDocToCode",
             "properties": {
                 "SwaggerDocToCode.swaggerJsonUrl": {
                     "type": "array",
                     "default": [],
                     "description": "%text.config.swaggerJsonUrl%"
                 },
-                "swaggerToTypes.savePath": {
+                "SwaggerDocToCode.savePath": {
                     "type": "string",
                     "description": "%text.config.savePath%",
                     "default": "types/swagger-interfaces"
                 },
-                "swaggerToTypes.showStatusbarItem": {
+                "SwaggerDocToCode.showStatusbarItem": {
                     "type": "boolean",
                     "description": "%text.config.showStatusbarItem%",
                     "default": true
                 },
-                "swaggerToTypes.compareChanges": {
+                "SwaggerDocToCode.compareChanges": {
                     "type": "boolean",
                     "description": "%text.config.compareChanges%",
                     "default": true
                 },
-                "swaggerToTypes.reloadWhenSettingsChanged": {
+                "SwaggerDocToCode.reloadWhenSettingsChanged": {
                     "type": "boolean",
                     "description": "%text.config.reloadWhenSettingsChanged%",
                     "default": true

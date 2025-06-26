@@ -25,7 +25,7 @@ export const PUBLISHER = packageJson.publisher
 /** 插件私有配置文件路径 */
 export const LOCAL_CONFIG_PATH = path.join(EXT_PATH, 'local.config.json')
 /** vscode 配置项前缀 */
-export const CONFIG_GROUP = 'swaggerToTypes'
+export const CONFIG_GROUP = 'SwaggerDocToCode'
 /** 模板配置文件名 */
 export const TEMPLATE_FILE_NAME = 'swagger-to-types.template.js'
 /** 默认模板配置文件路径 */
