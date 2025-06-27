@@ -4,8 +4,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getWorkspaceTemplateConfig = exports.templateConfig = void 0;
-const path_1 = __importDefault(require("path"));
 const fs_1 = __importDefault(require("fs"));
+const path_1 = __importDefault(require("path"));
 const vscode_1 = __importDefault(require("vscode"));
 const tools_1 = require("../tools");
 exports.templateConfig = {};
@@ -27,9 +27,23 @@ exports.getWorkspaceTemplateConfig = getWorkspaceTemplateConfig;
 getWorkspaceTemplateConfig();
 /** 监听文件保存 */
 vscode_1.default.workspace.onDidSaveTextDocument(({ languageId, fileName }) => {
-    // 过滤非 TS 语言文件
+    // 过滤非 JS 语言文件和非模板配置文件
     if (languageId !== 'javascript' && fileName !== workspaceConfigPath)
         return;
+    // 重新加载模板配置
+    console.log('模板配置文件已保存，重新加载配置...');
     getWorkspaceTemplateConfig();
+});
+/** 监听文件创建 */
+vscode_1.default.workspace.onDidCreateFiles((event) => {
+    event.files.forEach((file) => {
+        if (file.fsPath === workspaceConfigPath) {
+            console.log('模板配置文件已创建，重新加载配置...');
+            // 延迟一下确保文件写入完成
+            setTimeout(() => {
+                getWorkspaceTemplateConfig();
+            }, 100);
+        }
+    });
 });
 //# sourceMappingURL=get-templates.js.map

@@ -50,9 +50,13 @@ async function createTemplateFileIfNotExists() {
     // 写入模板文件
     fs.writeFileSync(templatePath, enhancedTemplateContent, 'utf8')
     
+    // 立即重新加载模板配置，避免需要重启VSCode
+    const { getWorkspaceTemplateConfig } = await import('../tools/get-templates')
+    getWorkspaceTemplateConfig()
+    
     log.info('✅ 模板文件已自动生成', true)
     vscode.window.showInformationMessage(
-      `🎉 接口模板已生成！\n\n文件位置: .vscode/${TEMPLATE_FILE_NAME}\n\n您可以编辑此文件来自定义生成的接口代码格式。`,
+      `🎉 接口模板已生成！\n\n文件位置: .vscode/${TEMPLATE_FILE_NAME}\n\n您可以编辑此文件来自定义生成的接口代码格式。\n\n模板配置已自动加载，无需重启VSCode！`,
       '打开模板文件'
     ).then((selection) => {
       if (selection === '打开模板文件') {

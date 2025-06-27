@@ -189,8 +189,11 @@ function registerLocalCommands(viewList, viewLocal) {
                     const basicTemplate = template_generator_1.TemplateGenerator.generateBasicTemplate();
                     fs_1.default.writeFileSync(workspaceConfigPath, basicTemplate);
                 }
+                // 立即重新加载模板配置，避免需要重启VSCode
+                const { getWorkspaceTemplateConfig } = require('../tools/get-templates');
+                getWorkspaceTemplateConfig();
                 vscode_1.default.window
-                    .showInformationMessage("🎉 模板配置文件创建成功！", "打开文件", "查看文档")
+                    .showInformationMessage("🎉 模板配置文件创建成功！\n\n模板配置已自动加载，无需重启VSCode！", "打开文件", "查看文档")
                     .then((selection) => {
                     if (selection === "打开文件") {
                         vscode_1.default.workspace

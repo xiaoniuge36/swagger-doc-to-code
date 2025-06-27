@@ -1,4 +1,27 @@
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -33,8 +56,11 @@ async function createTemplateFileIfNotExists() {
         const enhancedTemplateContent = template_generator_1.TemplateGenerator.generateEnhancedTemplate();
         // 写入模板文件
         fs_1.default.writeFileSync(templatePath, enhancedTemplateContent, 'utf8');
+        // 立即重新加载模板配置，避免需要重启VSCode
+        const { getWorkspaceTemplateConfig } = await Promise.resolve().then(() => __importStar(require('../tools/get-templates')));
+        getWorkspaceTemplateConfig();
         tools_1.log.info('✅ 模板文件已自动生成', true);
-        vscode_1.default.window.showInformationMessage(`🎉 接口模板已生成！\n\n文件位置: .vscode/${tools_1.TEMPLATE_FILE_NAME}\n\n您可以编辑此文件来自定义生成的接口代码格式。`, '打开模板文件').then((selection) => {
+        vscode_1.default.window.showInformationMessage(`🎉 接口模板已生成！\n\n文件位置: .vscode/${tools_1.TEMPLATE_FILE_NAME}\n\n您可以编辑此文件来自定义生成的接口代码格式。\n\n模板配置已自动加载，无需重启VSCode！`, '打开模板文件').then((selection) => {
             if (selection === '打开模板文件') {
                 vscode_1.default.workspace.openTextDocument(templatePath).then((doc) => {
                     vscode_1.default.window.showTextDocument(doc);

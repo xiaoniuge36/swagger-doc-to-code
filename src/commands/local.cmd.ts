@@ -292,9 +292,13 @@ export function registerLocalCommands(
           fs.writeFileSync(workspaceConfigPath, basicTemplate);
         }
 
+        // 立即重新加载模板配置，避免需要重启VSCode
+        const { getWorkspaceTemplateConfig } = require('../tools/get-templates');
+        getWorkspaceTemplateConfig();
+
         vscode.window
           .showInformationMessage(
-            "🎉 模板配置文件创建成功！",
+            "🎉 模板配置文件创建成功！\n\n模板配置已自动加载，无需重启VSCode！",
             "打开文件",
             "查看文档"
           )
