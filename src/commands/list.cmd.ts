@@ -13,6 +13,7 @@ import {
   deleteEmptyProperty,
   TEMPLATE_FILE_NAME,
   DEFAULT_TEMPLATE_FILE_PATH,
+  convertChineseToEnglish,
 } from '../tools'
 import { openListPicker, renderToInterface } from '../core'
 
@@ -98,8 +99,9 @@ export function registerListCommands({
       // 优先使用 groupName，如果没有则使用 title 作为分组名
       const groupName = e.groupName || e.title
       if (groupName && groupName !== 'Default') {
-        // 清理分组名，移除特殊字符，确保可以作为目录名
-        const cleanGroupName = groupName.replace(/[<>:"/\\|?*]/g, '_').trim()
+        // 先转换中文为英文，再清理分组名
+        const englishGroupName = convertChineseToEnglish(groupName)
+        const cleanGroupName = englishGroupName.replace(/[<>:"/\\|?*]/g, '_').trim()
         if (cleanGroupName) {
           finalSavePath = path.join(savePath, cleanGroupName)
         }

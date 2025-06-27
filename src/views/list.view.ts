@@ -22,6 +22,7 @@ import {
   WORKSPACE_PATH,
   localize,
   showLoading,
+  convertChineseToEnglish,
 } from '../tools'
 import { TreeInterface } from './local.view'
 import { SwaggerJsonTreeItem } from '../core/swagger-parser-v2'
@@ -337,7 +338,8 @@ export class ViewList extends BaseTreeProvider<ListItem> {
         // 添加当前父级分组名
         const parentGroupName = parentGroup.title || parentGroup.groupName
         if (parentGroupName && parentGroupName !== 'Default') {
-          const cleanParentName = parentGroupName.replace(/[<>:"/\\|?*]/g, '_').trim()
+          const englishParentName = convertChineseToEnglish(parentGroupName)
+          const cleanParentName = englishParentName.replace(/[<>:"/\\|?*]/g, '_').trim()
           if (cleanParentName) {
             groupPath.push(cleanParentName)
           }

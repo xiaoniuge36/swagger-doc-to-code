@@ -270,7 +270,8 @@ class ViewList extends core_1.BaseTreeProvider {
                 // 添加当前父级分组名
                 const parentGroupName = parentGroup.title || parentGroup.groupName;
                 if (parentGroupName && parentGroupName !== 'Default') {
-                    const cleanParentName = parentGroupName.replace(/[<>:"/\\|?*]/g, '_').trim();
+                    const englishParentName = (0, tools_1.convertChineseToEnglish)(parentGroupName);
+                    const cleanParentName = englishParentName.replace(/[<>:"/\\|?*]/g, '_').trim();
                     if (cleanParentName) {
                         groupPath.push(cleanParentName);
                     }

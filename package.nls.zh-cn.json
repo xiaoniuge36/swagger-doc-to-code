@@ -2,7 +2,7 @@
   "app.title": "Swagger To Code",
   "app.category": "Swagger To Code",
 
-  "view.list.title": "Swagger 接口列表",
+  "view.list.title": "API 文档接口列表 (Swagger/OpenAPI)",
   "view.local.title": "本地接口列表",
 
   "viewsWelcome.emptyList": "[添加 Swagger API/DOC API](command:cmd.list.add)\n[打开工作区设置](command:cmd.common.setting)\n",

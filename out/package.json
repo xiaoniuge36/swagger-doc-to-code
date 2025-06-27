@@ -241,8 +241,8 @@
                 },
                 {
                     "command": "cmd.local.createTemplate",
-                    "group": "navigation@12",
-                    "when": "view == view.local"
+                    "group": "navigation@03",
+                    "when": "view == view.list"
                 },
                 {
                     "command": "cmd.local.refresh",
@@ -392,7 +392,9 @@
         "typescript": "^4.4.4",
         "vscode-test": "^1.6.1"
     },
-    "dependencies": {},
+    "dependencies": {
+        "pinyin-pro": "^3.26.0"
+    },
     "author": {
         "name": "niuge666",
         "url": "https://www.niuge666.me/",

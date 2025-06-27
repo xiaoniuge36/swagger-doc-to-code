@@ -19,6 +19,7 @@
 - 📋 **一键复制**: 支持生成并复制完整的请求函数代码
 - 🌐 **多数据源**: 支持本地文件、远程 URL、多个项目同时管理
 - 📁 **智能分组**: 支持按配置源和接口分组自动保存，保持目录结构一致性
+- 🌏 **中文转英文**: 智能中文分组名称转换，支持常用词汇映射和拼音转换，确保文件夹命名规范
 
 ### 🚀 增强功能
 - 🎉 **智能欢迎**: 首次使用引导和版本升级通知
@@ -97,6 +98,8 @@
 | `apiDocToTypes.generateRequestCode` | 自动生成请求函数代码 | boolean | false |
 | `apiDocToTypes.typePrefix` | 类型名称前缀 | string | '' |
 | `apiDocToTypes.excludePaths` | 排除的接口路径（支持正则） | string[] | [] |
+| `apiDocToTypes.enableChineseConversion` | 启用中文分组名称转英文 | boolean | true |
+| `apiDocToTypes.chineseConversionMode` | 中文转换模式（'pinyin'\|'mapping'\|'auto'） | string | 'auto' |
 
 ### DataSourceItem
 
@@ -344,6 +347,37 @@ function typeMapping(swaggerType, format) {
 ```
 
 ## 🔧 高级功能
+
+### 🌏 中文转英文功能
+
+扩展提供了智能的中文分组名称转英文功能，确保生成的文件夹和文件名称符合规范：
+
+#### 功能特点
+- **智能检测**: 自动识别中文字符，仅对包含中文的分组名称进行转换
+- **分层转换**: 优先使用常用词汇映射，智能拼音转换作为补充
+- **词汇映射**: 内置丰富的技术词汇中英文映射表
+- **格式化处理**: 自动清理特殊字符，确保命名规范
+
+#### 转换示例
+```
+用户管理 → user-management
+获取用户列表 → get-user-list
+创建订单接口 → create-order-interface
+数据分析报表 → data-analysis-report
+```
+
+#### 配置选项
+```json
+{
+  "apiDocToTypes.enableChineseConversion": true,
+  "apiDocToTypes.chineseConversionMode": "auto"
+}
+```
+
+转换模式说明：
+- `auto`: 自动模式，优先词汇映射，补充拼音转换
+- `mapping`: 仅使用词汇映射
+- `pinyin`: 仅使用拼音转换
 
 ### 忽略特定接口
 
@@ -711,6 +745,12 @@ A: 确保 TypeScript 语言服务正常工作，重启 VS Code 或重新加载�
 **Q: 代码镜头按钮不显示？**
 A: 检查文件是否包含 `export namespace` 声明，确保文件格式正确。
 
+**Q: 中文分组名称没有转换为英文？**
+A: 检查 `apiDocToTypes.enableChineseConversion` 配置是否启用，确保安装了 `pinyin-pro` 依赖。
+
+**Q: 中文转英文效果不理想？**
+A: 可以调整 `apiDocToTypes.chineseConversionMode` 配置，或在词汇映射表中添加自定义映射。
+
 ### 调试模式
 
 启用调试模式查看详细日志：
@@ -728,7 +768,15 @@ MIT License - 查看 [LICENSE](./LICENSE) 文件了解详情。
 
 ## 📋 更新日志
 
-### v1.0.5 (最新)
+### v1.1.2 (最新)
+- 🌏 **中文转英文优化**: 引入 `pinyin-pro` 库，智能处理中文分组名称转换
+- 🔍 **智能中文检测**: 新增 `containsChinese` 函数，精确识别中文字符
+- 📚 **分层转换策略**: 优先使用常用词汇映射，智能拼音转换作为补充
+- 🎯 **词汇映射扩展**: 新增大量常用技术词汇的中英文映射表
+- 🧹 **格式化处理**: 自动清理特殊字符，确保生成的文件夹名称符合规范
+- 📁 **文件夹命名规范**: 解决复制请求代码时创建中文文件夹不规范的问题
+
+### v1.0.5
 - ✨ 新增智能欢迎界面和版本升级通知
 - 🚀 添加增强功能管理器，支持代码片段、智能提示等
 - 📊 状态栏显示 API 统计和快速操作入口
